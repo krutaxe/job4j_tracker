@@ -2,6 +2,7 @@ package ru.job4j.tracker;
 
 import java.io.InputStream;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -56,8 +57,7 @@ public class SqlTracker implements Store, AutoCloseable {
     public boolean replace(int id, Item item) {
         boolean rsl = false;
         try (PreparedStatement preparedStatement = cn.prepareStatement(
-                "update items set name = ?, created = ? where id = ?",
-                Statement.RETURN_GENERATED_KEYS)) {
+                "update items set name = ?, created = ? where id = ?")) {
             preparedStatement.setString(1, item.getName());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(item.getCreated()));
             preparedStatement.setInt(3, id);
@@ -85,17 +85,63 @@ public class SqlTracker implements Store, AutoCloseable {
 
     @Override
     public List<Item> findAll() {
-        return null;
+        List<Item> items = new ArrayList<>();
+        try (PreparedStatement preparedStatement = cn.prepareStatement(
+                "select * from items")) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    items.add(new Item(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            (resultSet.getTimestamp("created").toLocalDateTime())
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
     }
 
     @Override
     public List<Item> findByName(String key) {
-        return null;
+        List<Item> items = new ArrayList<>();
+        try (PreparedStatement preparedStatement = cn.prepareStatement(
+                "select * from items where items.name = ?")) {
+            preparedStatement.setString(1, key);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    items.add(new Item(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            (resultSet.getTimestamp("created").toLocalDateTime())
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
     }
 
     @Override
     public Item findById(int id) {
-        return null;
+        Item items = new Item();
+        try (PreparedStatement preparedStatement = cn.prepareStatement(
+                "select * from items where items.id = ?")) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    items = (new Item(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            (resultSet.getTimestamp("created").toLocalDateTime())
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
     }
-
 }
