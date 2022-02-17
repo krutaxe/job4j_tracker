@@ -14,12 +14,12 @@ public class DelTest implements UserAction {
 
     @Override
     public boolean execute(Input input, Store store) {
-        for (int i = 380000; i < 400000; i++) {
-//            out.println("=== Delete item ====");
+        for (int i = 280000; i < 400000; i++) {
+            out.println("=== Delete item ====");
             if (store.delete(i)) {
-//                out.println("Заявка удалена успешно - " + i);
+                out.println("Заявка удалена успешно - " + i);
             } else {
-//                out.println("Ошибка удаления заявки - " + i);
+                out.println("Ошибка удаления заявки - " + i);
             }
         }
 
