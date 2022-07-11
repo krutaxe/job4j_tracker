@@ -15,7 +15,7 @@ public class CreateTest implements UserAction {
 
     @Override
     public boolean execute(Input input, Store store) {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             Item item = new Item(new String("User: " + i));
             store.add(item);
         }
