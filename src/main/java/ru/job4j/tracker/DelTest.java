@@ -14,7 +14,7 @@ public class DelTest implements UserAction {
 
     @Override
     public boolean execute(Input input, Store store) {
-        for (int i = 280000; i < 400000; i++) {
+        for (int i = 0; i < 500000; i++) {
             out.println("=== Delete item ====");
             if (store.delete(i)) {
                 out.println("Заявка удалена успешно - " + i);
