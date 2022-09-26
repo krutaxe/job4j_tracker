@@ -1,9 +1,12 @@
 package ru.job4j.tracker;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@Data
 public class Item implements Comparable<Item> {
 
     private static final DateTimeFormatter FORMATTER
@@ -28,52 +31,6 @@ public class Item implements Comparable<Item> {
     }
 
     public  Item() {
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public String toString() {
-        return "Item{"
-                + "created=" + created.format(FORMATTER)
-                + ", id=" + id
-                + ", name='" + name + '\''
-                + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Item item = (Item) o;
-        return id == item.id && Objects.equals(name, item.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
     }
 
     @Override
