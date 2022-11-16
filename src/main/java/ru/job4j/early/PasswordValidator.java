@@ -29,6 +29,9 @@ public class PasswordValidator {
             if (password.charAt(i) > 32 && password.charAt(i) < 48) {
                 special = true;
             }
+            if (upper && lower && number && special) {
+                break;
+            }
         }
 
         if (!upper) {
