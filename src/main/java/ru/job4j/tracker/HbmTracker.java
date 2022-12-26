@@ -80,7 +80,7 @@ public class HbmTracker implements Store, AutoCloseable {
         Session session = sf.openSession();
         session.beginTransaction();
         List<Item> list = session.createQuery(
-                "FROM Item i WHERE i.name LIKE fName", Item.class)
+                "FROM Item i WHERE i.name LIKE :fName", Item.class)
                 .setParameter("fName", key).list();
         session.close();
         return list;
@@ -95,5 +95,14 @@ public class HbmTracker implements Store, AutoCloseable {
                 .setParameter("fId", id).uniqueResult();
         session.close();
         return item;
+    }
+
+    @Override
+    public void deleteAll() {
+        Session session = sf.openSession();
+        session.beginTransaction();
+        session.createQuery("delete from Item").executeUpdate();
+        session.getTransaction().commit();
+        session.close();
     }
 }

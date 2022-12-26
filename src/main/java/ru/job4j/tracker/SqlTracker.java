@@ -140,6 +140,11 @@ public class SqlTracker implements Store, AutoCloseable {
         return items;
     }
 
+    @Override
+    public void deleteAll() {
+
+    }
+
     public Item findItem(ResultSet resultSet) throws SQLException {
         Item item = new Item(
                 resultSet.getInt("id"),
