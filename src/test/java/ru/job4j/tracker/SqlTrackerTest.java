@@ -1,7 +1,11 @@
 package ru.job4j.tracker;
 
-import org.junit.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,19 +14,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class SqlTrackerTest {
-
     private static Connection connection;
-
-    @Ignore
-    @BeforeClass
+    @BeforeAll
     public static void initConnection() {
-        try (InputStream in = SqlTrackerTest.class.getClassLoader().getResourceAsStream(
-                "test.properties")) {
+        try (InputStream in = new FileInputStream("db/liquibase_test.properties")) {
             Properties config = new Properties();
             config.load(in);
             Class.forName(config.getProperty("driver-class-name"));
@@ -32,41 +30,41 @@ public class SqlTrackerTest {
                     config.getProperty("password")
 
             );
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void closeConnection() throws SQLException {
         connection.close();
     }
 
-    @After
+    @AfterEach
     public void wipeTable() throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement("delete from items")) {
             statement.execute();
         }
     }
 
-    @Ignore
+
     @Test
     public void whenSaveItemAndFindByGeneratedIdThenMustBeTheSame() {
         SqlTracker tracker = new SqlTracker(connection);
         Item item = new Item("item");
         tracker.add(item);
-        assertThat(tracker.findById(item.getId()), is(item));
+        assertThat(tracker.findById(item.getId())).isEqualTo(item);
     }
 
-    @Ignore
     @Test
     public void whenCreateItem() {
         SqlTracker tracker = new SqlTracker(connection);
         Item item = new Item("item");
         tracker.add(item);
-        assertThat(tracker.findAll().get(0), is(item));
+        assertThat(tracker.findById(item.getId())).isEqualTo(item);
     }
 
-    @Ignore
+
     @Test
     public void whenReplace() {
         SqlTracker tracker = new SqlTracker(connection);
@@ -74,10 +72,9 @@ public class SqlTrackerTest {
         tracker.add(item);
         Item item1 = new Item("item1");
         tracker.replace(item.getId(), item1);
-        assertThat(tracker.findById(item.getId()).getName(), is(item1.getName()));
+        assertThat(tracker.findById(item.getId()).getName()).isEqualTo(item1.getName());
     }
 
-    @Ignore
     @Test
     public void whenDeleteItem() {
         SqlTracker tracker = new SqlTracker(connection);
@@ -86,10 +83,10 @@ public class SqlTrackerTest {
         tracker.add(item);
         tracker.add(item1);
         tracker.delete(item1.getId());
-        assertThat(tracker.findById(item1.getId()), is(nullValue()));
+        assertThat(tracker.findById(item1.getId())).isEqualTo(null);
     }
 
-    @Ignore
+
     @Test
     public void whenFindAll() {
         SqlTracker tracker = new SqlTracker(connection);
@@ -97,10 +94,10 @@ public class SqlTrackerTest {
         Item item2 = new Item("item2");
         tracker.add(item1);
         tracker.add(item2);
-        assertThat(tracker.findAll(), is(List.of(item1, item2)));
+        assertThat(tracker.findAll()).isEqualTo(List.of(item1, item2));
     }
 
-    @Ignore
+
     @Test
     public void whenFindById() {
         SqlTracker tracker = new SqlTracker(connection);
@@ -108,10 +105,10 @@ public class SqlTrackerTest {
         Item item2 = new Item("item2");
         tracker.add(item1);
         tracker.add(item2);
-        assertThat(tracker.findById(item2.getId()).getName(), is("item2"));
+        assertThat(tracker.findById(item2.getId()).getName()).isEqualTo("item2");
     }
 
-    @Ignore
+
     @Test
     public void whenFindByName() {
         SqlTracker tracker = new SqlTracker(connection);
@@ -119,7 +116,7 @@ public class SqlTrackerTest {
         Item item2 = new Item("item");
         tracker.add(item1);
         tracker.add(item2);
-        assertThat(tracker.findByName("item"), is(List.of(item1, item2)));
+        assertThat(tracker.findByName("item")).isEqualTo(List.of(item1, item2));
     }
 
 }
